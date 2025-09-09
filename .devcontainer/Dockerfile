@@ -5,5 +5,17 @@ RUN echo node ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/node && chmod 0440 /etc
 RUN mkdir /workspaces && chown node:node /workspaces
 RUN npm install -g pnpm
 
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      python3 python3-pip python3-venv ffmpeg curl unzip ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+    # Paquetes Python offline/útiles:
+# - vosk: STT local
+# - instaloader: descarga de contenido de Instagram (requiere red en runtime)
+RUN pip3 install --no-cache-dir vosk instaloader
+
 USER node
 RUN mkdir -p ~/.pnpm-store && pnpm config set store-dir ~/.pnpm-store --global
+
